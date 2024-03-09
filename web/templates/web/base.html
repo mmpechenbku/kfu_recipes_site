@@ -10,10 +10,12 @@
         {% if user.is_authenticated %}
             <div style="text-align: right;">
                 Вы авторизированы как <b>{{ user.username }}</b>
+                <a href="{% url 'sign_out' %}">Выход</a>
             </div>
         {% else %}
             <div style="text-align: right;">
                 <a href="{% url 'sign_up' %}">Регистрация</a>
+                <a href="{% url 'sign_in' %}">Авторизация</a>
             </div>
         {% endif %}
     </nav>
