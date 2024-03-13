@@ -1,9 +1,21 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db.models import Count
 
 User = get_user_model()
 
 class Recipe(models.Model):
+
+    class RecipeManager(models.Manager):
+        def detail(self):
+            return self.get_queryset() \
+                 .prefetch_related('ingredients', 'likes', 'steps')
+
+        def popular(self):
+            return self.get_queryset() \
+                .annotate(likes_count=Count('likes')) \
+                .order_by('-likes_count')
+
 
     DIFFICULTY_OPTIONS = (
         ('hard', 'Сложный'),
@@ -24,6 +36,12 @@ class Recipe(models.Model):
     cooking_time = models.IntegerField(verbose_name="Время приготовления")
     author = models.ForeignKey(to=User, verbose_name='Пользователь', on_delete=models.CASCADE)
     access = models.CharField(choices=ACCESS_OPTIONS, default='private', verbose_name='Доступ', max_length=10)
+
+    objects = RecipeManager()
+
+    @property
+    def get_sum_likes(self):
+        return self.likes.count()
 
     def __str__(self):
         return self.title
@@ -72,7 +90,7 @@ class RecipeStep(models.Model):
 
 
 class LikeRecipe(models.Model):
-    recipe = models.ForeignKey(to=Recipe, verbose_name='Рецепт', on_delete=models.CASCADE, related_name='saving')
+    recipe = models.ForeignKey(to=Recipe, verbose_name='Рецепт', on_delete=models.CASCADE, related_name='likes')
     user = models.ForeignKey(to=User, verbose_name='Пользователь', on_delete=models.CASCADE, blank=True, null=True)
     time_create = models.DateTimeField(verbose_name='Время добавления', auto_now_add=True)
 

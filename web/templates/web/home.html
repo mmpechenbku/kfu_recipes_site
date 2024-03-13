@@ -1,1 +1,13 @@
 {% extends 'web/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+    {% for recipe in recipes %}
+        {% include 'web/recipe_card.html' %}
+    {% endfor %}
+
+    <script src="{% static 'web/js/like.js' %}"></script>
+
+{% endblock content %}

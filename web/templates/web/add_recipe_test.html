@@ -1,0 +1,101 @@
+{% extends 'web/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+    <h1>Добавление рецепта</h1>
+
+    <form id="recipe-form" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <h4>1. Название рецепта</h4>
+        <input type="text" id="recipe_name" name="recipe_name" value="{{ recipe.title }}" required>
+
+        <h4>2. Краткое описание</h4>
+
+        <textarea id="recipe_description" name="recipe_description" required>{{ recipe.title }}</textarea>
+        <p style="margin-left: auto; margin-right: 7%; margin-top: 7px; color: rgba(0, 0, 0, 0.70); font-size: 14px;">До 310 символов</p>
+
+        <h4>3. Загрузите обложку рецепта</h4>
+        <label for="recipe_image"></label>
+        <input id="recipe_image" name="recipe_image" type="file" accept=".png, .jpg, .jpeg" value="{% if recipe != null %}{% if recipe.picture != null %}{{ recipe.picture.url }}{% endif %}{% endif %}" required/>
+
+        <h4>4. Ингредиенты</h4>
+        <input type="text" id="ingredient-search" name="ingredient_search" placeholder="Введите название ингридиента">
+        <div class="available-ingredients">
+            <label>Ингредиенты:</label>
+            <div id="ingredient-buttons" style="display: inline"></div>
+            {% for ingredient in ingredients %}
+                <button type="button" class="ingredient-button ingredients-on-page" data-ingredient-id="{{ ingredient.id }}">{{ ingredient.name }}</button>
+            {% endfor %}
+        </div>
+
+        <div class="ingredients_quantity__container">
+            <div class="ingredients_quantity__container-title">
+                <h5>Количесвта ингредиентов:</h5>
+            </div>
+            <div class="ingredient-quantity-column">
+                <div class="ingredient-quantity">
+                    {% if recipe != null %}
+                        {% for item in quantity_ingr %}
+                            <button type="button" class="ingredient-button selected ingr_edit" data-ingredient-id="{{ item.ingredient.id }}">{{ item.ingredient.name }}</button>
+                            <div>
+                                <input data-quantity="{{ item.ingredient.id }}" name="quantity_{{ item.ingredient.id }}" placeholder="Количество" value="{{ item.quantity }}">
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <h4>5. Шаги приготовления</h4>
+        <div id="steps-section">
+            <div id="added-steps">
+                {% if recipe != null %}
+                    {% if steps != null %}
+                        {% for step in steps %}
+                            <div class="step">
+                                <input type="file" name="step_image_{{ step.step_number }}" accept=".png, .jpg, .jpeg" id="step-image-{{ step.step_number }}" value="{% if step.image.url != null %} {{ step.image.url }} {% endif %}">
+                                <textarea name="step_description_{{ step.step_number }}" placeholder="Описание шага" id="step-description-{{ step.step_number }}">{{ step.description }}</textarea>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+            </div>
+            <button type="button" id="add-step">Добавить шаг</button>
+
+        </div>
+
+        <h4>6. Краткое описание</h4>
+        <div id="instruction-summary">
+            <ol id="summary-list"></ol>
+        </div>
+
+        <h4>7. Оцените сложность и время приготовления</h4>
+        <select name="difficulty" id="difficulty">
+            <option value="easy" {% if recipe != null %}{% if recipe.difficulty == 'easy' %}selected{% endif %}{% endif %}>Легко</option>
+            <option value="medium" {% if recipe != null %}{% if recipe.difficulty == 'medium' %}selected{% endif %}{% endif %}>Средне</option>
+            <option value="hard" {% if recipe != null %}{% if recipe.difficulty == 'hard' %}selected{% endif %}{% endif %}>Сложно</option>
+        </select>
+
+        <label for="cooking_time">Время приготовления (в минутах):</label>
+        <input type="number" name="cooking_time" id="cooking_time" value="{{ recipe.cooking_time }}" required>
+
+
+        <br><br><br>
+        <button>Сохранить в избранном</button>
+        <p>Рецепт будете видеть только Вы во вкладке «Избранное»</p>
+
+        <button type="button" id="save-recipe" data-url="{{ url }}">Сохранить рецепт</button>
+        <p>После модерации Ваш рецепт будет опубликован!</p>
+
+
+
+    </form>
+<script type=text/javascript>
+    var link = "{% url 'recipes' %}"
+</script>
+<script src="{% static 'web/js/add_recipe.js' %}"></script>
+
+{% endblock content %}

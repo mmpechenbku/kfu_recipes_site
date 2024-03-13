@@ -1,0 +1,8 @@
+<a href="{% url 'recipe_detail' recipe.pk %}"><h3>{{ recipe.title }}</h3></a>
+<p>{{ recipe.description }}</p>
+<button class="like-button" style="{% if likes %}{% if recipe.id in likes %}border-color: #f44336;{% endif %}{% endif %}cursor: pointer;" data-recipe="{{ recipe.id }}">Likes: {{ recipe.get_sum_likes }}</button>
+{% if recipe.author == user %}
+    <br><br>
+    <a href="{% url 'edit_recipe' recipe.pk %}">Изменить</a>
+{% endif %}
+<hr>
