@@ -1,0 +1,34 @@
+{% extends 'web/base.html' %}
+
+{% load static %}
+
+{% block content %}
+    {% if recipe.picture.url is not null %}
+        <img src="{{ recipe.picture.url }}" alt="{{ recipe.title }}" style="height:250px;"/>
+    {% endif %}
+    <h1>{{ recipe.title }}</h1>
+    <button class="like-button" style="{% if likes %}{% if recipe.id in likes %}border-color: #f44336;{% endif %}{% endif %}cursor: pointer;" data-recipe="{{ recipe.id }}">Likes: {{ recipe.get_sum_likes }}</button>
+    <p>{{ recipe.description }}</p>
+
+    <h2>Ингредиенты:</h2>
+    <ul class="ingredients__list ingredients-list">
+        {% for quantity in quantity_ingr %}
+            <li>- {{ quantity.ingredient.name}}: {{quantity.quantity }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Пошаговый рецепт</h2>
+
+    {% for step in steps %}
+        <div>
+            {% if step.image.url is not null %}
+                <img src="{{ step.image.url }}" alt="" style="height:100px;">
+            {% endif %}
+            <h3 style="display: inline; text-align: center">{{ step.step_number }} шаг:
+                {{ step.description }}</h3>
+        </div>
+    {% endfor %}
+
+    <script src="{% static 'web/js/like.js' %}"></script>
+
+{% endblock content %}

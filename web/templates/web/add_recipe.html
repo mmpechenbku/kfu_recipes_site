@@ -1,0 +1,68 @@
+{% extends 'web/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<h1>Добавление рецепта</h1>
+
+<form id="recipe-form" enctype="multipart/form-data">
+
+    <h4>1. Название рецепта</h4>
+    <input type="text" id="recipe_name" name="recipe_name" required>
+
+    <h4>2. Краткое описание</h4>
+
+    <textarea id="recipe_description" name="recipe_description" required></textarea>
+    <p style="margin-left: auto; margin-right: 7%; margin-top: 7px; color: rgba(0, 0, 0, 0.70); font-size: 14px;">До 310 символов</p>
+
+    <h4>3. Загрузите обложку рецепта</h4>
+    <label for="recipe_image"></label>
+    <input id="recipe_image" name="recipe_image" type="file" accept=".png, .jpg, .jpeg" required/>
+
+    <h4>4. Ингредиенты</h4>
+    <div class="available-ingredients">
+    {% for ingredient in ingredients %}
+        {% if forloop.counter < 50 %}
+            <button type="button" data-ingredient-id="{{ ingredient.id }}">{{ ingredient.name }}</button>
+        {% endif %}
+    {% endfor %}
+    </div>
+
+    <div class="ingredient-quantity">
+            <div><p>Вы выбрали:</p></div>
+            <div><p>Укажите количество:</p></div>
+    </div>
+
+    <input type="text" id="add-new__ingredient" name="add-new__ingredient" placeholder="Дополнительные ингредиенты, например “Соль по вкусу”">
+
+    <h4>5. Шаги приготовления</h4>
+    <div id="steps-section">
+        <div id="added-steps"></div>
+        <h3>+</h3>
+    </div>
+
+    <h4>6. Оцените сложность и время приготовления</h4>
+    <label for="difficulty">Сложность</label>
+    <select id="difficulty" name="difficulty">
+        <option value="Легко">Легко</option>
+        <option value="Средняя">Средне</option>
+        <option value="Сложно">Сложно</option>
+    </select>
+
+    <label for="cooking_time">Время приготовления</label>
+    <input type="number" name="cooking_time" id="cooking_time" required>
+
+    <br><br>
+    <button type="submit">Сохранить в избранном</button>
+    <p>Рецепт будете видеть только Вы во вкладке «Избранное»</p>
+
+    <button type="submit" id="save-recipe">Сохранить рецепт</button>
+    <p>После модерации Ваш рецепт будет опубликован!</p>
+
+
+</form>
+
+<script src="{% static 'web/js/add_recipe.js' %}"></script>
+
+{% endblock content %}
