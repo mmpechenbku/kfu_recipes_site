@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'recipes_site.middlewares.SqlPrintingMiddleware'
 ]
 
 ROOT_URLCONF = 'recipes_site.urls'
