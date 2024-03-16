@@ -1,0 +1,16 @@
+{% extends 'web/base.html' %}
+
+{% block content %}
+
+    <h1>Аналитика</h1>
+
+    <p>Всего рецептов: <b>{{ overall_stat.count }}</b></p>
+    <p>Максимальное время приготовления: {{ overall_stat.max_cooking_time }}</p>
+    <p>Минимальное время приготовления: {{ overall_stat.min_cooking_time }}</p>
+
+    <h3>Статистика по ингредиентам</h3>
+    {% for ingredient_stat in ingredients_stat %}
+        <p>{{ ingredient_stat }} - Использовался раз в рецептах: {{ ingredient_stat.count }}</p>
+    {% endfor %}
+
+{% endblock content %}
