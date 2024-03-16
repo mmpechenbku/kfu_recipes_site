@@ -7,6 +7,8 @@
         <img src="{{ recipe.picture.url }}" alt="{{ recipe.title }}" style="height:250px;"/>
     {% endif %}
     <h1>{{ recipe.title }}</h1>
+    <h3>Сложность: {{ recipe.get_difficulty_display }}</h3>
+    <h3>Время приготовления: {{ recipe.cooking_time }}</h3>
     <button class="like-button" style="{% if likes %}{% if recipe.id in likes %}border-color: #f44336;{% endif %}{% endif %}cursor: pointer;" data-recipe="{{ recipe.id }}">Likes: {{ recipe.get_sum_likes }}</button>
     <p>{{ recipe.description }}</p>
 

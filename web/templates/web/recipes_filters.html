@@ -1,0 +1,12 @@
+<form action="">
+    <b>Фильтры:</b><br>
+
+    {% for field in filter_form %}
+        {{ field.label }}
+        {{ field }}
+    {% endfor %}
+
+    <button>Найти</button>
+
+    <a href="?">Показать все</a>
+</form>
