@@ -19,7 +19,7 @@
 
         <h4>3. Загрузите обложку рецепта</h4>
         <label for="recipe_image"></label>
-        <input id="recipe_image" name="recipe_image" type="file" accept=".png, .jpg, .jpeg" value="{% if recipe != null %}{% if recipe.picture != null %}{{ recipe.picture.url }}{% endif %}{% endif %}" required/>
+        <input id="recipe_image" name="recipe_image" type="file" accept=".png, .jpg, .jpeg" value="{% if recipe != null %}{% if recipe.picture.url != null %}{{ recipe.picture.url }}{% endif %}{% endif %}" required/>
 
         <h4>4. Ингредиенты</h4>
         <input type="text" id="ingredient-search" name="ingredient_search" placeholder="Введите название ингридиента">
