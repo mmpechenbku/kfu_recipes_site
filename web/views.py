@@ -7,10 +7,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db.models import Count, Max, Min
+from django.http import HttpResponse
 
-from web.forms import RegistrationForm, AuthForm, RecipeFilterForm
+from web.forms import RegistrationForm, AuthForm, RecipeFilterForm, ImportForm
 from web.models import Ingredient, Recipe, IngredientQuantity, RecipeStep, LikeRecipe
-from web.services import filter_recipes
+from web.services import filter_recipes, export_recipes_csv, import_recipes_from_csv
 
 User = get_user_model()
 
@@ -34,6 +35,13 @@ def recipes_list(request, filter):
         paginator = Paginator(recipes, per_page=10)
         page_number = request.GET.get("page", 1)
 
+        if request.GET.get('export') == 'csv':
+            response = HttpResponse(
+                content_type='text/csv',
+                headers={"Content-Disposition": "attachment; filename=recipes.csv"}
+            )
+            return export_recipes_csv(recipes, response)
+
         data = {
             'recipes': paginator.get_page(page_number),
             'likes': likes,
@@ -44,6 +52,9 @@ def recipes_list(request, filter):
 
 
 def home_view(request):
+    if request.GET.get('export') == 'csv':
+        return recipes_list(request, 'popular')
+
     data = recipes_list(request, 'popular')
 
     return render(request, 'web/home.html', data)
@@ -187,6 +198,9 @@ class IngredientSearchView(View):
 
 
 def recipes_view(request):
+    if request.GET.get('export') == 'csv':
+        return recipes_list(request, 'title')
+
     data = recipes_list(request, 'title')
     return render(request, 'web/recipes_list.html', data)
 
@@ -250,3 +264,14 @@ def analytics_view(request):
     }
 
     return render(request, 'web/analytics.html', data)
+
+@login_required
+def import_view(request):
+    if request.method == 'POST':
+        form = ImportForm(files=request.FILES)
+        if form.is_valid():
+            import_recipes_from_csv(form.cleaned_data['file'], request.user.id)
+            return redirect("recipes")
+    return render(request, "web/import.html", {
+        "form": ImportForm()
+    })
