@@ -8,6 +8,20 @@
         {% include 'web/recipe_card.html' %}
     {% endfor %}
 
+    <nav>
+        {% if recipes.has_previous %}
+            <a href="?page=1">в начало</a>
+            <a href="?page={{ recipes.previous_page_number }}">предыдущая страница</a>
+        {% endif %}
+
+        страница {{ recipes.number }} из {{ recipes.paginator.num_pages }}
+
+        {% if recipes.has_next %}
+            <a href="?page={{ recipes.next_page_number }}">следующая страница</a>
+            <a href="?page={{ recipes.paginator.num_pages }}">в конец</a>
+        {% endif %}
+    </nav>
+
     <script src="{% static 'web/js/like.js' %}"></script>
 
 {% endblock content %}
