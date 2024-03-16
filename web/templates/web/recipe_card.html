@@ -5,6 +5,15 @@
 <p>{{ recipe.description }}</p>
 <p>Сложность: {{ recipe.get_difficulty_display }}</p>
 <p>Время приготовления: {{ recipe.cooking_time }}</p>
+<small>
+    {% if recipe.ingredients.all %}
+        Ингредиенты:
+        {% for ingredient in recipe.ingredients.all %}
+            {{ ingredient.name }}
+        {% endfor %}
+    {% endif %}
+</small>
+<br><br>
 <button class="like-button" style="{% if likes %}{% if recipe.id in likes %}border-color: #f44336;{% endif %}{% endif %}cursor: pointer;" data-recipe="{{ recipe.id }}">Likes: {{ recipe.get_sum_likes }}</button>
 {% if recipe.author == user %}
     <br><br>

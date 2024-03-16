@@ -13,29 +13,60 @@ from web.services import filter_recipes
 
 User = get_user_model()
 
+
 # def paginate(model, per_page=10):
 #     paginator = Paginator(model, per_page)
 
+def recipes_list(request, filter):
+    recipes = Recipe.objects.popular() if filter == 'popular' else Recipe.objects.all().order_by(
+        'title') if filter == 'title' else None
+    if recipes == None:
+        return None
+    else:
+        likes = LikeRecipe.objects.filter(user=request.user).values_list('recipe',
+                                                                         flat=True) if request.user.is_authenticated else None
+
+        filter_form = RecipeFilterForm(request.GET)
+        filter_form.is_valid()
+        recipes = filter_recipes(recipes, filter_form.cleaned_data)
+
+        total_count = recipes.count()
+        recipes = recipes.prefetch_related('ingredients')
+
+        paginator = Paginator(recipes, per_page=10)
+        page_number = request.GET.get("page", 1)
+
+        data = {
+            'recipes': paginator.get_page(page_number),
+            'likes': likes,
+            'filter_form': filter_form,
+            'total_count': total_count
+        }
+    return data
+
+
 def home_view(request):
-    recipes = Recipe.objects.popular()
-    likes = LikeRecipe.objects.filter(user=request.user).values_list('recipe',
-                                                                     flat=True) if request.user.is_authenticated else None
+    # recipes = Recipe.objects.popular()
+    # likes = LikeRecipe.objects.filter(user=request.user).values_list('recipe',
+    #                                                                  flat=True) if request.user.is_authenticated else None
+    #
+    # filter_form = RecipeFilterForm(request.GET)
+    # filter_form.is_valid()
+    # recipes = filter_recipes(recipes, filter_form.cleaned_data)
+    #
+    # total_count = recipes.count()
+    #
+    # paginator = Paginator(recipes, per_page=10)
+    # page_number = request.GET.get("page", 1)
+    #
+    # data = {
+    #     'recipes': paginator.get_page(page_number),
+    #     'likes': likes,
+    #     'filter_form': filter_form,
+    #     'total_count': total_count
+    # }
+    data = recipes_list(request, 'popular')
 
-    filter_form = RecipeFilterForm(request.GET)
-    filter_form.is_valid()
-    recipes = filter_recipes(recipes, filter_form.cleaned_data)
-
-    total_count = recipes.count()
-
-    paginator = Paginator(recipes, per_page=10)
-    page_number = request.GET.get("page", 1)
-
-    data = {
-        'recipes': paginator.get_page(page_number),
-        'likes': likes,
-        'filter_form': filter_form,
-        'total_count': total_count
-    }
     return render(request, 'web/home.html', data)
 
 
@@ -177,24 +208,26 @@ class IngredientSearchView(View):
 
 
 def recipes_view(request):
-    recipes = Recipe.objects.all().order_by("title")
-    likes = LikeRecipe.objects.filter(user=request.user).values_list('recipe',
-                                                                     flat=True) if request.user.is_authenticated else None
-    filter_form = RecipeFilterForm(request.GET)
-    filter_form.is_valid()
-    recipes = filter_recipes(recipes, filter_form.cleaned_data)
+    # recipes = Recipe.objects.all().order_by("title")
+    # likes = LikeRecipe.objects.filter(user=request.user).values_list('recipe',
+    #                                                                  flat=True) if request.user.is_authenticated else None
+    # filter_form = RecipeFilterForm(request.GET)
+    # filter_form.is_valid()
+    # recipes = filter_recipes(recipes, filter_form.cleaned_data)
+    #
+    # total_count = recipes.count()
+    #
+    # paginator = Paginator(recipes, per_page=10)
+    # page_number = request.GET.get("page", 1)
+    #
+    # data = {
+    #     'recipes': paginator.get_page(page_number),
+    #     'likes': likes,
+    #     'filter_form': filter_form,
+    #     'total_count': total_count,
+    # }
 
-    total_count = recipes.count()
-
-    paginator = Paginator(recipes, per_page=10)
-    page_number = request.GET.get("page", 1)
-
-    data = {
-        'recipes': paginator.get_page(page_number),
-        'likes': likes,
-        'filter_form': filter_form,
-        'total_count': total_count,
-    }
+    data = recipes_list(request, 'title')
     return render(request, 'web/recipes_list.html', data)
 
 
