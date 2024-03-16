@@ -28,3 +28,7 @@ class RecipeFilterForm(forms.Form):
     search = forms.CharField(label="", widget=forms.TextInput(attrs={"placeholder": "Поиск"}), required=False)
     difficulty = forms.ChoiceField(label="Сложность", choices=Recipe.DIFFICULTY_OPTIONS, required=False)
     cooking_time = forms.IntegerField(label="Время приготовления", required=False)
+
+
+class ImportForm(forms.Form):
+    file = forms.FileField()
