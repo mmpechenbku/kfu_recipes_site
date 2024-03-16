@@ -1,5 +1,6 @@
 import csv
 from web.models import Recipe, Ingredient
+from recipes_site.redis import get_redis_client
 
 def filter_recipes(recipes_qs, filters):
     if filters['search']:
@@ -54,3 +55,11 @@ def import_recipes_from_csv(file, user_id):
                 Recipe.ingredients.through(recipe_id=recipe.id, ingredient_id=ingredient_id)
             )
     Recipe.ingredients.through.objects.bulk_create(ingredients_in_recipes)
+
+def get_stat():
+    redis = get_redis_client()
+    keys = redis.keys("stat_*")
+    return [
+        (key.decode().replace("stat_", ""), redis.get(key).decode())
+        for key in keys
+    ]

@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import connection
+from recipes_site.redis import get_redis_client
 
 def print_queries(queries):
     tag = uuid.uuid4()
@@ -33,3 +34,15 @@ class SqlPrintingMiddleware(object):
         if len(connection.queries) > 0:
             print_queries(connection.queries)
         return response
+
+
+class StatMiddleware(object):
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        redis = get_redis_client()
+        redis.incr(f"stat_{request.path}")
+        return response
+
