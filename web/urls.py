@@ -1,6 +1,6 @@
 from django.urls import path
 from web.views import home_view, registration_view, auth_view, logout_view, add_recipe_view, IngredientSearchView, \
-    recipes_view, RecipeDetailView, LikeRecipeView, analytics_view, import_view
+    recipes_view, RecipeDetailView, LikeRecipeView, analytics_view, import_view, stat_view
 
 urlpatterns = [
     path('', home_view, name='home'),
@@ -15,4 +15,5 @@ urlpatterns = [
     path('recipes/like_recipe/', LikeRecipeView.as_view(), name='like_recipe'),
     path('analytics/', analytics_view, name='analytics'),
     path("import/", import_view, name="import"),
+    path("stat/", stat_view, name="stat"),
 ]

@@ -8,10 +8,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db.models import Count, Max, Min
 from django.http import HttpResponse
+from django.views.decorators.cache import cache_page
 
 from web.forms import RegistrationForm, AuthForm, RecipeFilterForm, ImportForm
 from web.models import Ingredient, Recipe, IngredientQuantity, RecipeStep, LikeRecipe
-from web.services import filter_recipes, export_recipes_csv, import_recipes_from_csv
+from web.services import filter_recipes, export_recipes_csv, import_recipes_from_csv, get_stat
 
 User = get_user_model()
 
@@ -50,7 +51,7 @@ def recipes_list(request, filter):
         }
     return data
 
-
+@cache_page(60)
 def home_view(request):
     if request.GET.get('export') == 'csv':
         return recipes_list(request, 'popular')
@@ -197,6 +198,7 @@ class IngredientSearchView(View):
         return JsonResponse(data, safe=False)
 
 
+@cache_page(60)
 def recipes_view(request):
     if request.GET.get('export') == 'csv':
         return recipes_list(request, 'title')
@@ -275,3 +277,10 @@ def import_view(request):
     return render(request, "web/import.html", {
         "form": ImportForm()
     })
+
+@login_required
+def stat_view(request):
+    return render(request, "web/stat.html", {
+        "results": get_stat(),
+    })
+
