@@ -7,18 +7,23 @@
 <h1>Рецепты</h1>
 
 {% for recipe in recipes %}
-    {% if recipe.picture.url is not null %}
-        <img src="{{ recipe.picture.url }}" alt="{{ recipe.title }}" style="height:100px;"/>
-    {% endif %}
-    <a href="{% url 'recipe_detail' recipe.pk %}"><h3>{{ recipe.title }}</h3></a>
-    <p>{{ recipe.description }}</p>
-    <button class="like-button" style="{% if likes %}{% if recipe.id in likes %}border-color: #f44336;{% endif %}{% endif %}cursor: pointer;" data-recipe="{{ recipe.id }}">Likes: {{ recipe.get_sum_likes }}</button>
-    {% if recipe.author == user %}
-        <br><br>
-        <a href="{% url 'edit_recipe' recipe.pk %}">Изменить</a>
-    {% endif %}
-    <hr>
+    {% include 'web/recipe_card.html' %}
 {% endfor %}
+
+    <nav>
+        {% if recipes.has_previous %}
+            <a href="?page=1">в начало</a>
+            <a href="?page={{ recipes.previous_page_number }}">предыдущая страница</a>
+        {% endif %}
+
+        страница {{ recipes.number }} из {{ recipes.paginator.num_pages }}
+
+        {% if recipes.has_next %}
+            <a href="?page={{ recipes.next_page_number }}">следующая страница</a>
+            <a href="?page={{ recipes.paginator.num_pages }}">в конец</a>
+        {% endif %}
+    </nav>
+
 
 <script src="{% static 'web/js/like.js' %}"></script>
 

@@ -5,19 +5,25 @@ from django.views import View
 from django.views.generic import DetailView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 
 from web.forms import RegistrationForm, AuthForm
 from web.models import Ingredient, Recipe, IngredientQuantity, RecipeStep, LikeRecipe
 
 User = get_user_model()
 
+# def paginate(model, per_page=10):
+#     paginator = Paginator(model, per_page)
 
 def home_view(request):
     recipes = Recipe.objects.popular()
     likes = LikeRecipe.objects.filter(user=request.user).values_list('recipe',
                                                                      flat=True) if request.user.is_authenticated else None
+    paginator = Paginator(recipes, per_page=10)
+    page_number = request.GET.get("page", 1)
+
     data = {
-        'recipes': recipes,
+        'recipes': paginator.get_page(page_number),
         'likes': likes,
     }
     return render(request, 'web/home.html', data)
@@ -164,8 +170,11 @@ def recipes_view(request):
     recipes = Recipe.objects.all().order_by("title")
     likes = LikeRecipe.objects.filter(user=request.user).values_list('recipe',
                                                                      flat=True) if request.user.is_authenticated else None
+    paginator = Paginator(recipes, per_page=10)
+    page_number = request.GET.get("page", 1)
+
     data = {
-        'recipes': recipes,
+        'recipes': paginator.get_page(page_number),
         'likes': likes,
     }
     return render(request, 'web/recipes_list.html', data)
