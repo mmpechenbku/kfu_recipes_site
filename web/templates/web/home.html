@@ -4,9 +4,13 @@
 
 {% block content %}
 
+    {% include 'web/recipes_filters.html' %}
+
     {% for recipe in recipes %}
         {% include 'web/recipe_card.html' %}
     {% endfor %}
+
+    всего записей: {{ total_count }}. {{ recipes|length }} на этой странице.
 
     <nav>
         {% if recipes.has_previous %}

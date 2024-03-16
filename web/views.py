@@ -7,8 +7,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 
-from web.forms import RegistrationForm, AuthForm
+from web.forms import RegistrationForm, AuthForm, RecipeFilterForm
 from web.models import Ingredient, Recipe, IngredientQuantity, RecipeStep, LikeRecipe
+from web.services import filter_recipes
 
 User = get_user_model()
 
@@ -19,12 +20,21 @@ def home_view(request):
     recipes = Recipe.objects.popular()
     likes = LikeRecipe.objects.filter(user=request.user).values_list('recipe',
                                                                      flat=True) if request.user.is_authenticated else None
+
+    filter_form = RecipeFilterForm(request.GET)
+    filter_form.is_valid()
+    recipes = filter_recipes(recipes, filter_form.cleaned_data)
+
+    total_count = recipes.count()
+
     paginator = Paginator(recipes, per_page=10)
     page_number = request.GET.get("page", 1)
 
     data = {
         'recipes': paginator.get_page(page_number),
         'likes': likes,
+        'filter_form': filter_form,
+        'total_count': total_count
     }
     return render(request, 'web/home.html', data)
 
@@ -170,12 +180,20 @@ def recipes_view(request):
     recipes = Recipe.objects.all().order_by("title")
     likes = LikeRecipe.objects.filter(user=request.user).values_list('recipe',
                                                                      flat=True) if request.user.is_authenticated else None
+    filter_form = RecipeFilterForm(request.GET)
+    filter_form.is_valid()
+    recipes = filter_recipes(recipes, filter_form.cleaned_data)
+
+    total_count = recipes.count()
+
     paginator = Paginator(recipes, per_page=10)
     page_number = request.GET.get("page", 1)
 
     data = {
         'recipes': paginator.get_page(page_number),
         'likes': likes,
+        'filter_form': filter_form,
+        'total_count': total_count,
     }
     return render(request, 'web/recipes_list.html', data)
 

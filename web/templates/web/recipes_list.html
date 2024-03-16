@@ -4,11 +4,15 @@
 
 {% block content %}
 
-<h1>Рецепты</h1>
+    <h1>Рецепты</h1>
 
-{% for recipe in recipes %}
-    {% include 'web/recipe_card.html' %}
-{% endfor %}
+    {% include 'web/recipes_filters.html' %}
+
+    {% for recipe in recipes %}
+        {% include 'web/recipe_card.html' %}
+    {% endfor %}
+
+    всего записей: {{ total_count }}. {{ recipes|length }} на этой странице.
 
     <nav>
         {% if recipes.has_previous %}
@@ -25,6 +29,6 @@
     </nav>
 
 
-<script src="{% static 'web/js/like.js' %}"></script>
+    <script src="{% static 'web/js/like.js' %}"></script>
 
 {% endblock content %}
